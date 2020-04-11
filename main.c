@@ -1,9 +1,17 @@
 #include <stdio.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
 
 int check (int,int,int);
+
+struct mesg_buffer{
+    int mesg_type;
+    char szo[10];
+}message;
+
 
 int main(int argc, char* argv[])
 {
@@ -77,8 +85,8 @@ int main(int argc, char* argv[])
             resString1[1] = '\0';
             resString2[0] = nope;
             resString2[1] = '\0';
-            strcpy(finishString[index][3], resString2);
-            strcpy(finishString[index][4], resString1);
+            strcpy(finishString[i][3], resString2);
+            strcpy(finishString[i][4], resString1);
         }
         else{
             resr1 = sqrt((pow(b,2)-(4*a*c)));
@@ -91,23 +99,41 @@ int main(int argc, char* argv[])
             double* ketto = &resr2;
 
 
-            sprintf(finishString[index][3], "%f", resr1);
-            sprintf(finishString[index][4], "%f", resr2);
+            sprintf(finishString[i][3], "%f", resr1);
+            sprintf(finishString[i][4], "%f", resr2);
         }
 
 
-        sprintf(finishString[index][0], "%d", numFinal[index][0]);
-        sprintf(finishString[index][1], "%d", numFinal[index][1]);
-        sprintf(finishString[index][2], "%d", numFinal[index][2]);
+        sprintf(finishString[i][0], "%d", numFinal[i][0]);
+        sprintf(finishString[i][1], "%d", numFinal[i][1]);
+        sprintf(finishString[i][2], "%d", numFinal[i][2]);
 
 
 
-        printf("%s %s %s       %s %s\n", finishString[index][0],finishString[index][1],finishString[index][2],finishString[index][3],finishString[index][4]);
+        printf("%s %s %s       %s %s\n", finishString[i][0],finishString[i][1],finishString[i][2],finishString[i][3],finishString[i][4]);
 
     }
 
 
     fclose(fp);
+
+
+    key_t key;
+    int msgid;
+
+    key = ftok(".", 65);
+
+    msgid = msgget(key, 0666 | IPC_CREAT);
+    message.mesg_type = 1;
+
+    for(i=0; i<index; i++){
+        for (j=0; j<5; j++){
+                msgsnd(msgid, (int *) &finishString[i][j], sizeof(finishString[i][j]), 0);
+        }
+    }
+
+
+
 }
 
 
