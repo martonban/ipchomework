@@ -128,9 +128,16 @@ int main(int argc, char* argv[])
 
     for(i=0; i<index; i++){
         for (j=0; j<5; j++){
-                msgsnd(msgid, (int *) &finishString[i][j], sizeof(finishString[i][j]), 0);
+                msgsnd(msgid, (int *) &finishString[i][j], sizeof(finishString), 0);
         }
     }
+
+    for(i=0; i<index; i++){
+        for (j=0; j<5; j++){
+            printf("Data Received is : %s \n",finishString[i][j]);
+        }
+    }
+
 
 
 
