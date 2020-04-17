@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/msg.h>
 #include <stdlib.h>
@@ -8,9 +9,12 @@
 int check (int,int,int);
 
 struct mesg_buffer{
-    int mesg_type;
-    char szo[10];
+    long mesg_type;
+    char szo[2][5][100];
 }message;
+
+
+
 
 
 int main(int argc, char* argv[])
@@ -110,9 +114,20 @@ int main(int argc, char* argv[])
 
 
 
-        printf("%s %s %s       %s %s\n", finishString[i][0],finishString[i][1],finishString[i][2],finishString[i][3],finishString[i][4]);
+        //printf("%s %s %s       %s %s\n", finishString[i][0],finishString[i][1],finishString[i][2],finishString[i][3],finishString[i][4]);
 
     }
+
+
+    
+
+    for(i=0; i<index; i++){
+        for (j=0; j<5; j++){
+            strcpy(message.szo[i][j],finishString[i][j]);
+        }
+    }
+
+
 
 
     fclose(fp);
@@ -128,18 +143,20 @@ int main(int argc, char* argv[])
 
     for(i=0; i<index; i++){
         for (j=0; j<5; j++){
-                msgsnd(msgid, (int *) &finishString[i][j], sizeof(finishString), 0);
+            msgsnd(msgid, (void *) &message, sizeof(message.szo[i][j]), 0);
+            printf("%s ",message.szo[i][j]);
         }
     }
-
+/*
     for(i=0; i<index; i++){
         for (j=0; j<5; j++){
-            printf("Data Received is : %s \n",finishString[i][j]);
+            printf("%s ",message.szo[i][j]);
         }
+        printf("\n");
     }
 
-
-
+printf("%d", index);
+*/
 
 }
 
