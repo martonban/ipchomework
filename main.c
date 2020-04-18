@@ -10,7 +10,7 @@ int check (int,int,int);
 
 struct mesg_buffer{
     long mesg_type;
-    char szo[2][5][100];
+    char szo[3][5][100];
 }message;
 
 
@@ -126,7 +126,6 @@ int main(int argc, char* argv[])
             strcpy(message.szo[i][j],finishString[i][j]);
         }
     }
-
 
 
 

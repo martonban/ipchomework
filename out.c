@@ -9,7 +9,7 @@
 
 struct mesg_buffer {
     long mesg_type;
-    char szo[2][5][100];
+    char szo[3][5][100];
 
 }message;
 
