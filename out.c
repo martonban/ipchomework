@@ -6,7 +6,7 @@
 #include <string.h>
 
 
-
+//Létrhozzuk, a szükséges struktúrát
 struct mesg_buffer {
     long mesg_type;
     char szo[100][5][10];
@@ -20,6 +20,8 @@ int main()
 
 	int i;
 
+	// Kivesszük, az input.tx-ből az első számot , hogy tudjuk meddig kell menni 
+
     FILE * fp;
     fp = fopen("input.txt", "r");
     if (fp == NULL){
@@ -29,6 +31,8 @@ int main()
 
     char needIndex[5];
 
+	
+	// Egyenlővé teszük az index váltózóval
     fscanf(fp, "%[^\n]", needIndex);
     int index = atoi(needIndex);
 
@@ -37,22 +41,25 @@ int main()
 
 
 
-
+	// Létrehozzuk azt a tömböt, amibe majd be másolunk mindent amit ki kell majd írnunk a fileban.
 	char finishString[index][5][10];
 
+	//Létrehozzuk, a szükséges változókat, az IPC-hez
     key_t key;
     int msgid;
 
-    // ftok to generate unique key
+    // Az ftokkal létrehozunk a kucsot amely szükséges lesz ahhoz, hogy kommunikáljuk a másik processel
     key = ftok(".", 65);
 
-    // msgget creates a message queue
-    // and returns identifier
+    // msgget létrehozza a message queue-t
     msgid = msgget(key, 0666 | IPC_CREAT);
 
 
 
-    // msgrcv to receive message
+    // A msgrcv megfeelő paraméterezésével elküldjük az adatokat
+	// A kapott adatokat átmásoljuk a finishString tömben, hogy kiirhasuk a fileba
+	//stdout-ra kiirjuka  a kapott adatokat soronként
+	 
     for(int i=0; i<index; i++){
         for(int j=0; j<5; j++){
             msgrcv(msgid,  &message, sizeof(message), 1, 0);

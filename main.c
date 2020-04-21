@@ -6,9 +6,12 @@
 #include <math.h>
 #include <string.h>
 
+
+
+// Függvény deklarálása
 int check (int,int,int);
 
-
+// A Messege Queue-hez szükséges struktúra
 struct mesg_buffer {
     long mesg_type;
     char szo[100][5][10];
@@ -20,7 +23,8 @@ int main(int argc, char* argv[])
 
 
     int i;
-
+	
+	//File megnyitása
     FILE * fp;
     fp = fopen("input.txt", "r");
     if (fp == NULL){
@@ -30,10 +34,11 @@ int main(int argc, char* argv[])
 
     char needIndex[5];
 
+	//Kiszedjük az első számot majd átalakítjuk számmá
     fscanf(fp, "%[^\n]", needIndex);
     int index = atoi(needIndex);
 
-
+	// A szükséges váltózók és tömbök létrehozása 
     char line[256];
     int num[3];
     int j;
@@ -42,7 +47,9 @@ int main(int argc, char* argv[])
     int num2;
     int numFinal[index][3];
 
-
+	// Itt végigmegyünk az össze soron 
+	// Kiszűri azokat a sorokat, amik nem felelnek meg (Az első sort)
+	// Majd ezeket áralakítja int-é és brölt őket egy tömbe
     while(fgets(line, sizeof(line), fp)) {
         if (strlen(line)>2 && k<index){
             j = 0;
@@ -60,16 +67,22 @@ int main(int argc, char* argv[])
     }
 
 
+
+	//Ezek leszenk az eredmények String-jei
     char resString1[10];
     char resString2[10];
     char nope = '-';
 
+	//Ezt a String tömböt fogom elküldeni
     char finishString[index][5][10];
 
+	//Idéglenes változók létrehozása
     int a,b,c;
 
 
-
+	// Kiszámoljuk az eredményeket
+	// Először ellenörzi, hogy van e eredménye az egynletnek. Ha nincs akkor "-" lesz az eredmény jelezve, hogy nincs megoldás
+	// Átalakítjja Stringé az eredményket és az alap adatokkal együtt betölti a egy String tömbe amit át fogunk küldeni.
     for(i=0; i<index; i++){
 
         double resr1,resr2 = 0;
@@ -109,7 +122,7 @@ int main(int argc, char* argv[])
 
 
     
-
+	// A teljes tömböt áttölti a Struktúra tömbjébe 
     for(i=0; i<index; i++){
         for (j=0; j<5; j++){
             strcpy(message.szo[i][j],finishString[i][j]);
@@ -117,19 +130,22 @@ int main(int argc, char* argv[])
     }
 
 
-
+	// Lázáródik a file írás
     fclose(fp);
 
-
+	// Létrehozzuk, a szükséges változókat, az IPC-hez
     key_t key;
     int msgid;
-
+	
+	// Az ftokkal létrehozunk a kucsot amely szükséges lesz ahhoz, hogy kommunikáljuk a másik processel
     key = ftok(".", 65);
 
+	// msgget létrehozza a message queue-t
     msgid = msgget(key, 0666 | IPC_CREAT);
     message.mesg_type = 1;
 
-
+	// A msgsnd megfeelő paraméterezésével elküldjük az adatokat
+	// Az stdout-ra kiiratjuk az általunk küldött adatokat
     for(i=0; i<index; i++){
         for (j=0; j<5; j++){
             msgsnd(msgid, (void *) &message, sizeof(message), 0);
@@ -142,7 +158,8 @@ int main(int argc, char* argv[])
 
 }
 
-
+// Függvény definició
+// Ez a függvény határozza meg azt, hogy az egyenletnek van e megoldása 
 int check (int a,int b, int c){
 
     int pos = 0;
