@@ -9,7 +9,7 @@
 
 struct mesg_buffer {
     long mesg_type;
-    char szo[3][5][100];
+    char szo[100][5][10];
 
 }message;
 
@@ -17,7 +17,28 @@ struct mesg_buffer {
 int main()
 {
 
-	char finishString[7][5][100];
+
+	int i;
+
+    FILE * fp;
+    fp = fopen("input.txt", "r");
+    if (fp == NULL){
+        printf("Problem with the input file!");
+        exit(1);
+    }
+
+    char needIndex[5];
+
+    fscanf(fp, "%[^\n]", needIndex);
+    int index = atoi(needIndex);
+
+    fclose(fp);
+
+
+
+
+
+	char finishString[index][5][10];
 
     key_t key;
     int msgid;
@@ -32,52 +53,34 @@ int main()
 
 
     // msgrcv to receive message
-    for(int i=0; i<2; i++){
+    for(int i=0; i<index; i++){
         for(int j=0; j<5; j++){
-            msgrcv(msgid,  &message, sizeof(message.szo[i][j]), 1, 0);
-            //strcpy(finishString[i][j],message.szo[i][j]);
+            msgrcv(msgid,  &message, sizeof(message), 1, 0);
+            strcpy(finishString[i][j],message.szo[i][j]);
             printf("Data Received is : %s \n", message.szo[i][j]);  
         }
     }
 
 
-/*
-    for(int i=0; i<3; i++){
-        for(int j=0; j<5; j++){
-            msgrcv(msgid, &message, sizeof(message.szo[i][j]), 1, 0);
-            printf("Data Received is : %s \n", message.szo[i][j]);  
-        }
+
+
+
+    //Lezárjuk a Message Queue-t
+    msgctl(msgid, IPC_RMID, NULL);
+
+
+    //Kiirjuk az output.txt fileb
+    FILE *fpp;
+    fpp = fopen("output.txt", "w+");
+
+
+    for(int i=0; i<index; i++){
+        fprintf(fpp,"%s %s %s %s %s\n", finishString[i][0], finishString[i][1] ,finishString[i][2] ,finishString[i][3] ,finishString[i][4]);
     }
 
-
-*/
-
-
-
-
-    //msgctl(msgid, IPC_RMID, NULL);
-
+    fclose(fpp);
+    
     return 0;
 
-
-
-
-/*
-
-    FILE *fp;
-    fp = fopen("output.txt", "w+");
-
-    int i;
-
-    int a[] = {1,2,5,6,7};
-
-
-    for(i=0; i<5; i++){
-        fprintf(fp,"%d\n", a[i]);
-    }
-
-    fclose(fp);
-
-*/
 
 }

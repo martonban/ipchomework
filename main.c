@@ -8,13 +8,11 @@
 
 int check (int,int,int);
 
-struct mesg_buffer{
+
+struct mesg_buffer {
     long mesg_type;
-    char szo[3][5][100];
+    char szo[100][5][10];
 }message;
-
-
-
 
 
 int main(int argc, char* argv[])
@@ -30,12 +28,11 @@ int main(int argc, char* argv[])
         exit(1);
     }
 
-
-
     char needIndex[5];
 
     fscanf(fp, "%[^\n]", needIndex);
     int index = atoi(needIndex);
+
 
     char line[256];
     int num[3];
@@ -61,9 +58,6 @@ int main(int argc, char* argv[])
 
         k++;
     }
-
-
-
 
 
     char resString1[10];
@@ -111,11 +105,6 @@ int main(int argc, char* argv[])
         sprintf(finishString[i][0], "%d", numFinal[i][0]);
         sprintf(finishString[i][1], "%d", numFinal[i][1]);
         sprintf(finishString[i][2], "%d", numFinal[i][2]);
-
-
-
-        //printf("%s %s %s       %s %s\n", finishString[i][0],finishString[i][1],finishString[i][2],finishString[i][3],finishString[i][4]);
-
     }
 
 
@@ -140,22 +129,16 @@ int main(int argc, char* argv[])
     msgid = msgget(key, 0666 | IPC_CREAT);
     message.mesg_type = 1;
 
+
     for(i=0; i<index; i++){
         for (j=0; j<5; j++){
-            msgsnd(msgid, (void *) &message, sizeof(message.szo[i][j]), 0);
-            printf("%s ",message.szo[i][j]);
-        }
-    }
-/*
-    for(i=0; i<index; i++){
-        for (j=0; j<5; j++){
+            msgsnd(msgid, (void *) &message, sizeof(message), 0);
             printf("%s ",message.szo[i][j]);
         }
         printf("\n");
     }
 
-printf("%d", index);
-*/
+
 
 }
 
